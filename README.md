@@ -1,5 +1,17 @@
 # python-rest-api-docker
 
+
+curl --header "Content-Type: application/json" \
+--request POST \
+--data '{"name": "naren"}' \
+http://10.20.150.130:5152/v1/api
+
+
+sudo docker build -t nonpci-peg-dockreg01.prod.cdps.local:5000/simulator/simple .
+sudo docker push nonpci-peg-dockreg01.prod.cdps.local:5000/simulator/simple
+
+
+
 steps to run the sample rest service on docker -
 
 1. Clone the Repository - git clone https://github.com/nanic/python-rest-api-docker.git

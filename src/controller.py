@@ -1,8 +1,10 @@
 from flask import Flask,request,jsonify
-import logging
+import logging,random
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+ref=str(random.randrange(1,9))+"-"+str(random.randrange(1,9))+"-"+str(random.randrange(1111111,9999999))
 
 @app.route('/v1/api', methods=['POST'])
 def postSomeThing():
@@ -10,7 +12,7 @@ def postSomeThing():
     name = content['name']
     logger.info('name: %s',name)
     return jsonify(
-        processorReference='1-9-4285769',
+        processorReference=ref,
         secureTradingResultCode='0'
     )
 
