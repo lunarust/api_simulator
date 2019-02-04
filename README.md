@@ -11,6 +11,8 @@ sudo docker build -t nonpci-peg-dockreg01.prod.cdps.local:5000/simulator/simple 
 sudo docker push nonpci-peg-dockreg01.prod.cdps.local:5000/simulator/simple
 
 
+http://blog.luisrei.com/articles/flaskrest.html
+https://docs.python.org/2/library/xml.etree.elementtree.html
 
 steps to run the sample rest service on docker -
 
