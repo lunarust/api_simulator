@@ -1,5 +1,7 @@
 from flask import Flask,request,jsonify
-import logging,random
+import logging,random,datetime
+import xml.etree.ElementTree as ET
+
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -8,14 +10,56 @@ ref=str(random.randrange(1,9))+"-"+str(random.randrange(1,9))+"-"+str(random.ran
 
 @app.route('/v1/api', methods=['POST'])
 def postSomeThing():
-    content = request.json
-    name = content['name']
-    logger.info('name: %s',name)
-    return jsonify(
-        processorReference=ref,
-        secureTradingResultCode='0'
-    )
+    data = request.data
+    #dataDict = json.dumps(xmltodict.parse(data))
+    dataDict = json.loads(data)
+    traceid = dataDict['traceId']
+    trxamount = dataDict['money']['amount']
+    trxcur = dataDict['money']['currency']
+
+    logger.info('trace: %s',traceid)
+    ref=str(random.randrange(1,9))+"-"+str(random.randrange(1,9))+"-"+str(random.randrange(1111111,9999999))
+    tmpresp = {'processorReference' : ref,
+      'secureTradingResultCode' : '0',
+      'live' : 'false',
+      'processorMoney': { 'amount': trxamount,
+      'currency' : trxcur,
+      'displayable' : trxamount+trxcur },
+      'traceid': traceid
+    }
+    return jsonify(tmpresp)
+
+@app.route('/v1/xml', methods=['POST'])
+def getXLM():
+    content = ET.fromstring(request.data)
+    #for child in content:
+    #   print child.tag, child.attrib
+    ref=str(random.randrange(1,9))+"-"+str(random.randrange(1,9))+"-"+str(random.randrange(1111111,9999999))
+    currentDT = datetime.datetime.now()
+    siteref = content[1][0][1].text
+    orderref = content[1][1][0].text
+    amount = content[1][2][0].text
+    currency = content[1][2][0].attrib.get('currencycode')
+
+    exp= ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><responseblock version=\"3.67\">"
+          "<requestreference>Wx-k4nfn1a0</requestreference>"
+          "<secrand>6iRxxxxiNwPkChI</secrand>"
+          "<response type=\"REFUND\">"
+          "<authcode>REFUND ACCEPTED</authcode>"
+          "<timestamp>"+currentDT.strftime("%Y-%m-%d %H:%M:%S")+"</timestamp>"
+          "<live>1</live>"
+          "<transactionreference>"+ref+"</transactionreference>"
+          "<security><address>0</address><postcode>0</postcode><securitycode>XXX</securitycode></security>"
+          "<settlement><settleduedate>"+currentDT.strftime("%Y-%m-%d")+"</settleduedate><settlestatus>0</settlestatus></settlement>"
+          "<billing><payment type=\"MASTERCARDDEBIT\"><issuer>POSTEPAY S.P.A</issuer><issuercountry>IT</issuercountry><pan>XXXXXXXXXX</pan></payment>"
+          "<amount currencycode="+currency+">"+amount+"</amount>"
+          "<dcc enabled=\"0\"/></billing><operation><accounttypedescription>ECOM</accounttypedescription></operation><error><message>Ok</message><code>0</code></error></response></responseblock>")
+
+
+    return exp
 
 @app.route("/")
 def hello():
     return "Hello World!"
+
+app.run(debug=True)
