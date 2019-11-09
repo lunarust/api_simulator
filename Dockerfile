@@ -1,4 +1,4 @@
-FROM nonpci-peg-dockreg01.prod.cdps.local:5000/alpine-python:2
+FROM dockreg01:5000/alpine-python:2
 MAINTAINER henka@protonmail.com
 ARG proxy
 ENV https_proxy=$proxy \
